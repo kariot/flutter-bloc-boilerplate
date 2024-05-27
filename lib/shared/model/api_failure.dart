@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-part '../model/api_failure.freezed.dart';
+part 'api_failure.freezed.dart';
 
 @freezed
 class ApiFailure with _$ApiFailure {
