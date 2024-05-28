@@ -3,7 +3,7 @@ part of 'login_bloc.dart';
 @freezed
 class LoginState with _$LoginState {
   const factory LoginState.initial() = _Init;
-  const factory LoginState.loading() = _Loading;
-  const factory LoginState.success(LoginResponse response) = _Success;
-  const factory LoginState.failure(String error) = _Error;
+  const factory LoginState.loading() = LoginLoading;
+  const factory LoginState.success(LoginResponse response) = LoginSuccess;
+  const factory LoginState.failure(String error) = LoginError;
 }

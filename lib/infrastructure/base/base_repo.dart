@@ -20,14 +20,12 @@ mixin BaseRepo {
   Future<Either<ApiFailure, E>> post<E>(
     String url,
     Map<String, dynamic>? body,
-    E Function(Object?) fromJsonE,
-    String Function(Map<String, dynamic>?) readAPIError,
+    E Function(Map<String, dynamic>?) fromJsonE,
   ) async {
     return sendRequest<E>(
       url,
       body,
       fromJsonE,
-      readAPIError,
       RequestType.POST,
     );
   }
@@ -39,34 +37,32 @@ mixin BaseRepo {
     Map<String, String> header,
     String Function(Map<String, dynamic>?) readAPIError,
   ) async {
-    return sendRequest<E>(url, body, fromJsonE, readAPIError, RequestType.PUT);
+    return sendRequest<E>(url, body, fromJsonE, RequestType.PUT);
   }
 
   Future<Either<ApiFailure, E>> patch<E>(
     String url,
     Map<String, dynamic>? body,
-    E Function(Object?) fromJsonE,
+    E Function(Map<String, dynamic>?) fromJsonE,
     String Function(Map<String, dynamic>?) readAPIError,
   ) async {
-    return sendRequest<E>(
-        url, body, fromJsonE, readAPIError, RequestType.PATCH);
+    return sendRequest<E>(url, body, fromJsonE, RequestType.PATCH);
   }
 
   Future<Either<ApiFailure, E>> delete<E>(
     String url,
-    E Function(Object?) fromJsonE,
+    E Function(Map<String, dynamic>?) fromJsonE,
     String Function(Map<String, dynamic>?) readAPIError,
   ) async {
-    return sendRequest<E>(
-        url, null, fromJsonE, readAPIError, RequestType.DELETE);
+    return sendRequest<E>(url, null, fromJsonE, RequestType.DELETE);
   }
 
   Future<Either<ApiFailure, E>> get<E>(
       String url,
-      E Function(Object?) fromJsonE,
+      E Function(Map<String, dynamic>?) fromJsonE,
       String Function(Map<String, dynamic>?) readAPIError) async {
     debugPrint('Requesting to $url');
-    return sendRequest<E>(url, null, fromJsonE, readAPIError, RequestType.GET);
+    return sendRequest<E>(url, null, fromJsonE, RequestType.GET);
   }
 
   Future<Map<String, String>> _getHeader() async {
@@ -78,20 +74,16 @@ mixin BaseRepo {
     return map;
   }
 
-  Future<Either<ApiFailure, E>> sendRequest<E>(
-      String url,
-      dynamic body,
-      E Function(Object?) fromJsonE,
-      String Function(Map<String, dynamic>?) readAPIError,
-      RequestType type,
+  Future<Either<ApiFailure, E>> sendRequest<E>(String url, dynamic body,
+      E Function(Map<String, dynamic>?) fromJsonE, RequestType type,
       {Map<String, String>? headers}) async {
     try {
       debugPrint('REQ -> $url');
       debugPrint('BODY -> ${jsonEncode(body.toString())}');
       var response = switch (type) {
         RequestType.GET => await client.get(Uri.parse(url)),
-        RequestType.POST => await client.post(url.toUri(),
-            body: jsonEncode(body), headers: headers),
+        RequestType.POST =>
+          await client.post(Uri.parse(url), body: body, headers: headers),
         RequestType.PATCH =>
           await client.patch(Uri.parse(url), body: jsonEncode(body)),
         RequestType.PUT =>
@@ -115,7 +107,7 @@ mixin BaseRepo {
               errorCode: response.statusCode));
         } else {
           return Left(ApiFailure.serverError(
-              message: readAPIError(decodedJson),
+              message: decodedJson?['error'],
               errorCode: response.statusCode,
               validationMessage: getValidationMessage(decodedJson)));
         }

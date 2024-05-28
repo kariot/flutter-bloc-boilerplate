@@ -1,22 +1,19 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:bloc_boilerplate/features/auth/login/bloc/login_bloc.dart';
 import 'package:bloc_boilerplate/shared/textfield_validators.dart';
 import 'package:bloc_boilerplate/shared/ui/common_widget_props.dart';
 import 'package:bloc_boilerplate/shared/ui/primary_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 @RoutePage()
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
-
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
+class LoginScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController(text: 'kminchelle');
-  final _passwordController = TextEditingController(text: '0lelplR');
+  final _usernameController = TextEditingController(text: 'eve.holt@reqres.in');
+  final _passwordController = TextEditingController(text: 'cityslicka');
+
+  LoginScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,10 +49,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: getInputDecoration('Enter you password'),
                   ),
                   const Gap(20),
-                  PrimaryButton(
-                      isLoading: false,
-                      onPressed: _onPressSignIn,
-                      title: 'Sign in')
+                  BlocConsumer<LoginBloc, LoginState>(
+                    listener: (ctx, state) {
+                      if (state is LoginSuccess) {
+                        //TODO Navigation
+                        return;
+                      }
+                      if (state is LoginError) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(SnackBar(content: Text(state.error)));
+                      }
+                    },
+                    builder: (context, state) {
+                      return PrimaryButton(
+                          isLoading: state is LoginLoading,
+                          onPressed: () => _onPressSignIn(context),
+                          title: 'Sign in');
+                    },
+                  )
                 ],
               ),
             ),
@@ -65,12 +76,14 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  @override
-  void dispose() {
-    _passwordController.dispose();
-    _usernameController.dispose();
-    super.dispose();
+  _onPressSignIn(BuildContext ctx) {
+    if (_formKey.currentState?.validate() == false) {
+      return;
+    }
+    final username = _usernameController.text.toString();
+    final password = _passwordController.text.toString();
+    ctx
+        .read<LoginBloc>()
+        .add(LoginEvent.loginPressed(username: username, password: password));
   }
-
-  _onPressSignIn() {}
 }
