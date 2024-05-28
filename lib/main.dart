@@ -1,5 +1,6 @@
 import 'package:bloc_boilerplate/di/injectable.dart';
 import 'package:bloc_boilerplate/features/auth/login/bloc/login_bloc.dart';
+import 'package:bloc_boilerplate/features/home/bloc/users_bloc.dart';
 import 'package:bloc_boilerplate/navigation/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,7 +24,10 @@ class MainApp extends StatelessWidget {
       providers: [
         BlocProvider<LoginBloc>(
           create: (context) => getIt<LoginBloc>(),
-        )
+        ),
+        BlocProvider<UsersBloc>(
+          create: (context) => getIt<UsersBloc>(),
+        ),
       ],
       child: MaterialApp.router(
         routerConfig: _appRouter.config(),

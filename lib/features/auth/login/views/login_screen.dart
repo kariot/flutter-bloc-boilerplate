@@ -90,6 +90,6 @@ class LoginScreen extends StatelessWidget {
   }
 
   void handleSuccess(BuildContext ctx, LoginResponse response) {
-    ctx.router.push(const HomeRoute());
+    ctx.router.replace(const HomeRoute());
   }
 }

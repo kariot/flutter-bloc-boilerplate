@@ -15,7 +15,17 @@ part 'login_bloc.freezed.dart';
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final IAuthRepo repo;
   LoginBloc(this.repo) : super(const LoginState.initial()) {
-    on<_LoginButtonPressed>(_loginUser);
+    // on<_LoginButtonPressed>(_loginUser);
+    on<_LoginButtonPressed>((event, state) async {
+      final username = event.username;
+      final password = event.password;
+      emit(const LoginState.loading());
+      final loginResponse = await repo.loginUser(username, password);
+      loginResponse.fold(
+        (l) => emit(LoginState.failure(l.message)),
+        (r) => emit(LoginState.success(r)),
+      );
+    });
   }
 
   FutureOr<void> _loginUser(

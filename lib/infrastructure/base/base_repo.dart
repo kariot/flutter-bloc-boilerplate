@@ -58,9 +58,7 @@ mixin BaseRepo {
   }
 
   Future<Either<ApiFailure, E>> get<E>(
-      String url,
-      E Function(Map<String, dynamic>?) fromJsonE,
-      String Function(Map<String, dynamic>?) readAPIError) async {
+      String url, E Function(Map<String, dynamic>?) fromJsonE) async {
     debugPrint('Requesting to $url');
     return sendRequest<E>(url, null, fromJsonE, RequestType.GET);
   }
