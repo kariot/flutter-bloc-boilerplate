@@ -1,5 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bloc_boilerplate/features/auth/login/bloc/login_bloc.dart';
+import 'package:bloc_boilerplate/features/auth/login/model/login_response/login_response.dart';
+import 'package:bloc_boilerplate/navigation/app_router.gr.dart';
 import 'package:bloc_boilerplate/shared/textfield_validators.dart';
 import 'package:bloc_boilerplate/shared/ui/common_widget_props.dart';
 import 'package:bloc_boilerplate/shared/ui/primary_button.dart';
@@ -52,7 +54,7 @@ class LoginScreen extends StatelessWidget {
                   BlocConsumer<LoginBloc, LoginState>(
                     listener: (ctx, state) {
                       if (state is LoginSuccess) {
-                        //TODO Navigation
+                        handleSuccess(context, state.response);
                         return;
                       }
                       if (state is LoginError) {
@@ -85,5 +87,9 @@ class LoginScreen extends StatelessWidget {
     ctx
         .read<LoginBloc>()
         .add(LoginEvent.loginPressed(username: username, password: password));
+  }
+
+  void handleSuccess(BuildContext ctx, LoginResponse response) {
+    ctx.router.push(const HomeRoute());
   }
 }
